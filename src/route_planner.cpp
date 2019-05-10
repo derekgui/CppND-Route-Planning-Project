@@ -29,3 +29,43 @@ std::vector<RouteModel::Node> RoutePlanner::ConstructFinalPath(RouteModel::Node*
 
         return path_found;
     }
+
+void RoutePlanner::AStarSearch(void){
+        start_node->visited = true;
+        open_list.push_back(start_node);
+
+        RouteModel::Node* current_node = nullptr;
+        while (open_list.size()>0)
+        {
+                current_node = NextNode();
+                if(current_node->distance(*end_node) == 0)
+                    m_Model.path = ConstructFinalPath(current_node);
+                else
+                    AddNeighbors(current_node);
+        }
+}
+
+RouteModel::Node* RoutePlanner::NextNode(){
+        
+        std::sort(open_list.begin(),open_list.end(),[&](const auto n1, const auto n2){
+                return n1->h_value+n1->g_value > n2->h_value+n2->g_value;
+        });
+        
+        RouteModel::Node* next_node = open_list.back();
+        open_list.pop_back();
+
+        return next_node;
+}
+
+void RoutePlanner::AddNeighbors(RouteModel::Node* current_node){
+        
+        current_node->FindNeighbors();
+        for(auto neighbor: current_node->neighbors){
+                neighbor->parent = current_node;
+                neighbor->g_value = current_node->g_value + current_node->distance(*neighbor);
+                neighbor->h_value = CalculateHValue(neighbor);
+                open_list.push_back(neighbor);
+                neighbor->visited = true;
+        }
+
+}
