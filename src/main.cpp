@@ -53,14 +53,25 @@ int main(int argc, const char **argv)
     // TODO: Declare floats `start_x`, `start_y`, `end_x`, and `end_y` and get
     // user input for these values using std::cin. Pass the user input to the
     // RoutePlanner object below.
+    float start_x, start_y, end_x, end_y;
+    std::cout << "Please enter values for start_x, start_y, end_x, end_y(valid range from 0-100): ";
+    while(!(std::cin >>start_x) || start_x < 0 || start_x > 100)
+      std::cout << "Please enter the right start_x value.\n";
+    while(!(std::cin >>start_y) || start_y < 0 || start_y > 100)
+      std::cout << "Please enter the right start_y value.\n";
+    while(!(std::cin >>end_x) || end_x < 0 || end_x > 100)
+      std::cout << "Please enter the right end_x value.\n";
+    while(!(std::cin >>end_y) || end_y < 0 || end_y > 100)
+      std::cout << "Please enter the right end_y value.\n";
+
 
     // Build Model.
     RouteModel model{osm_data};
 
     // Perform search and render results.
-    RoutePlanner route_planner{model, 10, 10, 90, 90};
+    RoutePlanner route_planner{model, start_x, start_y, end_x, end_y};
     route_planner.AStarSearch();
-    std::cout<<"The total distance is: "<< route_planner.GetDistance()<<" KM";
+    std::cout<<"The total distance is: "<< route_planner.GetDistance()<<" KM\n";
     Render render{model};
 
     auto display = io2d::output_surface{400, 400, io2d::format::argb32, io2d::scaling::none, io2d::refresh_style::fixed, 30};
